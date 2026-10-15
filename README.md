@@ -15,7 +15,7 @@ Every file it writes is read back and checked before you use it.
 1. [At a glance](#1-at-a-glance)
 2. [Getting started](#2-getting-started)
 3. [Test Points tab](#3-test-points-tab)
-4. [Height & Milling tab](#4-height--milling-tab)
+4. [Milling tab](#4-milling-tab)
 5. [Board view](#5-board-view)
 6. [A typical job, start to finish](#6-a-typical-job-start-to-finish)
 7. [Updates, versions and settings](#7-updates-versions-and-settings)
@@ -28,14 +28,14 @@ Every file it writes is read back and checked before you use it.
 
 The program has two tabs. Each takes files from the customer package and writes its results next to them.
 
-| | **Test Points** | **Height & Milling** |
+| | **Test Points** | **Milling** |
 |---|---|---|
 | **Purpose** | Customer test point list → fixture Excel + drill files | Parts too tall for the fixture → milling pockets |
 | **You give it** | The customer's test point file (`.csv`, `.xls`, `.xlsx`) | The package folder: ODB++ plus a STEP model and/or an Altium `.PcbDoc` |
 | **It writes** | `TP=<name>.xls` and a `TP=<name>_DRL` folder of drill files | A `Height_Report` folder and a `Milling_Report` folder (HTML, CSV, DXF) |
 | **It checks** | Every written file is read back and compared with the customer's list | Every test point hole is checked against every milling pocket |
 
-The **board view** on the Height & Milling tab draws the milling pockets and the test point holes
+The **board view** on the Milling tab draws the milling pockets and the test point holes
 together, from the files on disk. You see exactly what will be milled and drilled, and any hole that
 breaks into a pocket is marked in red.
 
@@ -99,7 +99,8 @@ another.
 - **Side values:** `Top`, `Bottom`, `Top Layer`, `Bot`, `T`, `B`, `Front`, `Back`, `Component`,
   `Solder`, … are all understood.
 - **Missing names:** if the Name column is empty, names are assigned.
-- **Missing side:** if the file has no Side column, the program asks which side the points are on.
+- **Missing side:** if the file has no Side column, every point defaults to **Bottom** (shown as a
+  warning in the Log). Use **Pick points / sides** to move any of them to Top.
 
 **Nothing goes missing silently.** Every non-blank row is accounted for. A row the program can't read
 with confidence is never dropped quietly. It's shown in a red **"Needs your OK before Generate"** box,
@@ -121,8 +122,8 @@ Tick **"I checked these – OK to generate"** to go ahead, or use **Pick points 
 | **T04 diameter (in)** | Diameter written for the probe tool in the raw drill files. Default `0.069`. |
 | **Probe sizing** | **DFT spacing table** (recommended): each hole gets the largest probe (100, 75, 50 or 39 mil) the QxQ Design-for-Test spacing minimums allow, checked against every other hole on that side. **Old CENSORT limits**: the older nearest-neighbour rule, for matching jobs made the old way. |
 | **Board upside down in fixture** | Swaps the drill files: customer Top points go to `PRB.DRL`, Bottom points to `TOP.DRL`. It applies to this board only and isn't remembered. |
-| **Pick points / sides** | After loading, opens a list where each point can be set to **Probe** (wired), **Clear** (clearance hole only) or **Skip** (left out, with the reason recorded). You can also move points between Top and Bottom and add extra holes by hand. |
-| **Pocket check** | Checks every hole against the milling pockets of the board in the same package. It uses the limits and offset from the Height & Milling tab. |
+| **Pick points / sides** | After loading, opens a list where each point can be set to **Probe** (wired), **Clear** (clearance hole only) or **Skip** (left out, with the reason recorded). You can also move points between Top and Bottom (one at a time, or all at once with the **Side, all points** buttons) and add extra holes by hand. |
+| **Pocket check** | Checks every hole against the milling pockets of the board in the same package. It uses the limits and offset from the Milling tab. |
 
 ### 3.3 Working through a file
 
@@ -176,7 +177,7 @@ stay in the Excel and the MAP, each in its own place in the customer's order. Th
 
 ---
 
-## 4. Height & Milling tab
+## 4. Milling tab
 
 Finds the components that are too tall for the fixture and creates a milling pocket for each one.
 
@@ -217,7 +218,7 @@ it:
 ### 4.3 Working through a package
 
 1. Drop the package folder and check the limits and offset.
-2. Click **Run height check + milling**. A large STEP file can take a minute.
+2. Click **Generate reports**. A large STEP file can take a minute.
 3. The summary lists the parts that are too tall, their pockets, and any test point hole that breaks
    into a pocket. The **Pockets** tab lists every pocket.
 4. Open the reports with **Height report**, **Milling report** or **Open folder**.
@@ -248,7 +249,7 @@ Bottom-side pockets are not mirrored.
 
 ## 5. Board view
 
-The lower half of the Height & Milling tab draws each side of the board:
+The lower half of the Milling tab draws each side of the board:
 
 - the board outline
 - every milling pocket
@@ -279,11 +280,11 @@ is drawn against the pockets of the board side it faces.
 ## 6. A typical job, start to finish
 
 1. Put the customer's files in one package folder: ODB++, STEP and/or PcbDoc, and the test point file.
-2. **Height & Milling tab**: drop the folder, check the limits, click **Run height check + milling**.
+2. **Milling tab**: drop the folder, check the limits, click **Generate reports**.
    Review the height and milling reports.
 3. **Test Points tab**: drop the test point file. Set the options, sort out anything in the red box,
    and click **Generate files**. Make sure the Log says **CHECK OK**.
-4. Back on **Height & Milling**, look at the board view. If any hole is boxed in red, decide what to
+4. Back on **Milling**, look at the board view. If any hole is boxed in red, decide what to
    do (move the probe, clearance hole, skip, or change the pocket) and generate again.
 5. Use `TP=<name>.xls`, the `SORT*.DRL` drill files and the milling DXF to build the fixture.
 
